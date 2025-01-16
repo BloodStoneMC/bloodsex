@@ -1,0 +1,29 @@
+name: bloodsex
+version: '1.0-SNAPSHOT'
+main: boo.bloodstone.bloodsex.Bloodsex
+api-version: '1.21'
+folia-supported: true
+
+commands:
+  bj:
+    description: description
+    usage: /bj [ник]
+    permission: bloodsex.sex
+  doggy:
+    description: description
+    usage: /doggy [ник]
+    permission: bloodsex.sex
+  marry:
+      description: description
+      usage: /marry [ник]
+      permission: bloodsex.sex
+  accept:
+    description: description
+    usage: /accept [ник]
+    permission: bloodsex.sex
+permissions:
+  bloodsex.sex:
+    description: Generic Permission for all commands
+    default: op
+
+depend: [GSit, NoEmotecraft]
