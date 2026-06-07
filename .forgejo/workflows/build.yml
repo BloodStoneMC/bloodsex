@@ -1,0 +1,13 @@
+name: Build
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: java21
+    uses: BloodStone/actions/.forgejo/workflows/build-and-publish.yml@main
+    with:
+      gradle_tasks: build -x test
+      maven_goals: -C -DskipTests package
+    secrets: inherit
