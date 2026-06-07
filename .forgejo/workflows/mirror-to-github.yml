@@ -1,0 +1,10 @@
+name: Mirror to GitHub
+
+on:
+  push:
+
+jobs:
+  mirror:
+    runs-on: java21
+    uses: BloodStone/actions/.forgejo/workflows/mirror-to-github.yml@main
+    secrets: inherit
