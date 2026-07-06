@@ -1,22 +1,26 @@
 package boo.bloodstone.bloodsex.animations
 
-import boo.bloodstone.bloodsex.Bloodsex
-import com.github.trard.Scheduler
-import io.github.kosmx.emotes.api.events.server.ServerEmoteAPI
+import boo.bloodstone.commonBloodLib.Scheduler
+import kr.toxicity.model.api.BetterModel
+import kr.toxicity.model.api.animation.AnimationModifier
+import kr.toxicity.model.api.bukkit.platform.BukkitAdapter
+import kr.toxicity.model.api.tracker.Tracker
+import kr.toxicity.model.api.tracker.TrackerModifier
 import org.bukkit.Location
 import org.bukkit.Particle
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
+import kotlin.jvm.optionals.getOrNull
 
 fun doggy(firstPlayer: Player, secondPlayer: Player, scheduler: Scheduler) {
-    start(secondPlayer, firstPlayer)
+    val session = start(secondPlayer, firstPlayer)
 
     scheduler.runInRegionLater(secondPlayer.location, 30 * 20) {
-        stop(secondPlayer, firstPlayer)
+        stop(secondPlayer, firstPlayer, session)
     }
 }
 
-private fun start(firstPlayer: Player, secondPlayer: Player) {
+private fun start(firstPlayer: Player, secondPlayer: Player): DoggySession {
     val direction: Vector = secondPlayer.location.subtract(firstPlayer.location).toVector().normalize()
     val newPosition: Vector = firstPlayer.location.add(direction.multiply(0.85)).toVector()
     secondPlayer.teleportAsync(newPosition.toLocation(secondPlayer.world))
@@ -38,15 +42,22 @@ private fun start(firstPlayer: Player, secondPlayer: Player) {
         particleLocation.world.spawnParticle(Particle.HEART, particleLocation, 1, 0.0, 0.0, 0.0, 0.0)
     }
 
+    var activeTracker: Tracker? = null
+    var passiveTracker: Tracker? = null
+
     if (firstPlayer.isOnline) {
-        ServerEmoteAPI.forcePlayEmote(firstPlayer.uniqueId, Bloodsex.plugin!!.activeEmote[0])
+        activeTracker = playBetterModel(firstPlayer, "bloodsex_doggy_active")
     }
     if (secondPlayer.isOnline) {
-        ServerEmoteAPI.forcePlayEmote(secondPlayer.uniqueId, Bloodsex.plugin!!.passiveEmote[0])
+        passiveTracker = playBetterModel(secondPlayer, "bloodsex_doggy_passive")
     }
+
+    return DoggySession(activeTracker, passiveTracker)
 }
 
-private fun stop(firstPlayer: Player, secondPlayer: Player) {
+private fun stop(firstPlayer: Player, secondPlayer: Player, session: DoggySession) {
+    session.close()
+
     val initialLocation: Location = firstPlayer.location.clone()
     val particleDirection: Vector = secondPlayer.location.subtract(initialLocation).toVector().normalize()
 
@@ -56,12 +67,43 @@ private fun stop(firstPlayer: Player, secondPlayer: Player) {
     }
 
     if (firstPlayer.isOnline) {
-        ServerEmoteAPI.setPlayerPlayingEmote(firstPlayer.uniqueId, null)
         if (firstPlayer.isSneaking) firstPlayer.isSneaking = false
     }
 
     if (secondPlayer.isOnline) {
-        ServerEmoteAPI.setPlayerPlayingEmote(secondPlayer.uniqueId, null)
         if (secondPlayer.isSneaking) secondPlayer.isSneaking = false
+    }
+}
+
+private fun playBetterModel(player: Player, modelName: String): Tracker? {
+    val renderer = BetterModel.model(modelName).getOrNull() ?: run {
+        player.sendMessage("Модель BetterModel $modelName не найдена. Перезагрузи BetterModel.")
+        return null
+    }
+
+    val tracker = renderer.create(
+        BukkitAdapter.adapt(player),
+        TrackerModifier.builder()
+            .damageAnimation(false)
+            .damageTint(false)
+            .build()
+    )
+
+    if (!tracker.animate("doggy", AnimationModifier.DEFAULT)) {
+        tracker.close()
+        player.sendMessage("Анимация BetterModel doggy не найдена в $modelName.")
+        return null
+    }
+
+    return tracker
+}
+
+private data class DoggySession(
+    private val activeTracker: Tracker?,
+    private val passiveTracker: Tracker?,
+) {
+    fun close() {
+        activeTracker?.close()
+        passiveTracker?.close()
     }
 }

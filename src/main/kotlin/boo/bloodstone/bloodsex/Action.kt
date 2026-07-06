@@ -3,7 +3,7 @@ package boo.bloodstone.bloodsex
 import boo.bloodstone.bloodsex.animations.blowjob
 import boo.bloodstone.bloodsex.animations.doggy
 import boo.bloodstone.bloodsex.animations.marry
-import com.github.trard.Scheduler
+import boo.bloodstone.commonBloodLib.Scheduler
 
 import org.bukkit.entity.Player
 

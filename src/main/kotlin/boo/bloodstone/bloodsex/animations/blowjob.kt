@@ -1,13 +1,13 @@
 package boo.bloodstone.bloodsex.animations
 
-import com.github.trard.Scheduler
+import boo.bloodstone.commonBloodLib.Scheduler
 import dev.geco.gsit.api.GSitAPI
 import org.bukkit.Location
 import org.bukkit.entity.Player
 import org.bukkit.util.Vector
 
 fun blowjob(firstPlayer: Player, secondPlayer: Player, scheduler: Scheduler) {
-    if (!GSitAPI.isSitting(firstPlayer)) {
+    if (!GSitAPI.isEntitySitting(firstPlayer)) {
         firstPlayer.sendMessage("Присядь сначала")
         secondPlayer.sendMessage("Ваш партнер не сидит")
         return

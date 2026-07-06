@@ -1,6 +1,6 @@
 package boo.bloodstone.bloodsex.animations
 
-import com.github.trard.Scheduler
+import boo.bloodstone.commonBloodLib.Scheduler
 import org.bukkit.Location
 import org.bukkit.entity.EntityType
 import org.bukkit.util.Vector

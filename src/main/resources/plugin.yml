@@ -1,7 +1,7 @@
 name: bloodsex
 version: '1.0-SNAPSHOT'
 main: boo.bloodstone.bloodsex.Bloodsex
-api-version: '1.21'
+api-version: '1.21.11'
 folia-supported: true
 
 commands:
@@ -17,13 +17,27 @@ commands:
       description: description
       usage: /marry [ник]
       permission: bloodsex.sex
+  rape:
+    description: description
+    usage: /rape [bj|doggy] [ник]
+    permission: bloodsex.rape
   accept:
     description: description
     usage: /accept [ник]
+    permission: bloodsex.sex
+  sex:
+    description: sex
+    usage: /sex [ник]
     permission: bloodsex.sex
 permissions:
   bloodsex.sex:
     description: Generic Permission for all commands
     default: op
+  bloodsex.rape:
+    description: Permission for direct actions without accept
+    default: op
+  bloodsex.rape.immune:
+    description: Players with this permission cannot be raped
+    default: false
 
-depend: [GSit, NoEmotecraft]
+depend: [CommonBloodLib, GSit, BetterModel]

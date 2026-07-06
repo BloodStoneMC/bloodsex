@@ -1,28 +1,26 @@
 package boo.bloodstone.bloodsex
 
-import com.github.trard.Scheduler
-import dev.kosmx.playerAnim.core.data.KeyframeAnimation
-import org.bukkit.Bukkit
-import org.bukkit.event.Listener
-import org.bukkit.plugin.Plugin
+import boo.bloodstone.commonBloodLib.Scheduler
 import org.bukkit.plugin.java.JavaPlugin
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class Bloodsex : JavaPlugin() {
-    lateinit var activeEmote: List<KeyframeAnimation>
-    lateinit var passiveEmote:  List<KeyframeAnimation>
-
     override fun onEnable() {
         plugin = this
 
         val requestManager = RequestManager()
         val scheduler = Scheduler(this)
 
-        activeEmote = deserializeEmote("emotes/active.json")!!
-        passiveEmote = deserializeEmote("emotes/passive.json")!!
+        installBetterModelResources()
 
         getCommand("bj")!!.setExecutor(RequestCommand(requestManager))
         getCommand("doggy")!!.setExecutor(RequestCommand(requestManager))
+        getCommand("sex")!!.setExecutor(RequestCommand(requestManager))
         getCommand("marry")!!.setExecutor(RequestCommand(requestManager))
+        val directActionCommand = DirectActionCommand(scheduler)
+        getCommand("rape")!!.setExecutor(directActionCommand)
+        getCommand("rape")!!.tabCompleter = directActionCommand
 
         getCommand("accept")!!.setExecutor(AcceptCommand(requestManager, scheduler))
     }
@@ -31,7 +29,30 @@ class Bloodsex : JavaPlugin() {
         // Plugin shutdown logic
     }
 
+    private fun installBetterModelResources() {
+        val pluginsDirectory = dataFolder.toPath().parent ?: dataFolder.toPath()
+        val destination = pluginsDirectory.resolve("BetterModel/models/bloodsex")
+        Files.createDirectories(destination)
+
+        for (model in betterModelModels) {
+            val resourcePath = "bettermodel/$model.bbmodel"
+            val targetPath = destination.resolve("$model.bbmodel")
+            getResource(resourcePath).use { input ->
+                if (input == null) {
+                    logger.warning("BetterModel resource not found: $resourcePath")
+                    return@use
+                }
+                Files.copy(input, targetPath, StandardCopyOption.REPLACE_EXISTING)
+            }
+        }
+    }
+
     companion object {
         var plugin: Bloodsex? = null
+
+        private val betterModelModels = listOf(
+            "bloodsex_doggy_active",
+            "bloodsex_doggy_passive",
+        )
     }
 }

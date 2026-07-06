@@ -1,6 +1,6 @@
 package boo.bloodstone.bloodsex.animations
 
-import com.github.trard.Scheduler
+import boo.bloodstone.commonBloodLib.Scheduler
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
