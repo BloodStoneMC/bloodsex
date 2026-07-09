@@ -1,42 +1,17 @@
-name: bloodsex
+name: BloodRP
 version: '1.0-SNAPSHOT'
-main: boo.bloodstone.bloodsex.Bloodsex
+main: boo.bloodstone.bloodsex.BloodRP
 api-version: '1.21.11'
 folia-supported: true
 
-commands:
-  bj:
-    description: description
-    usage: /bj [ник]
-    permission: bloodsex.sex
-  doggy:
-    description: description
-    usage: /doggy [ник]
-    permission: bloodsex.sex
-  marry:
-      description: description
-      usage: /marry [ник]
-      permission: bloodsex.sex
-  rape:
-    description: description
-    usage: /rape [bj|doggy] [ник]
-    permission: bloodsex.rape
-  accept:
-    description: description
-    usage: /accept [ник]
-    permission: bloodsex.sex
-  sex:
-    description: sex
-    usage: /sex [ник]
-    permission: bloodsex.sex
 permissions:
-  bloodsex.sex:
+  bloodrp.sex:
     description: Generic Permission for all commands
     default: op
-  bloodsex.rape:
+  bloodrp.rape:
     description: Permission for direct actions without accept
     default: op
-  bloodsex.rape.immune:
+  bloodrp.rape.immune:
     description: Players with this permission cannot be raped
     default: false
 
