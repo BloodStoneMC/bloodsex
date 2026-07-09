@@ -1,6 +1,6 @@
 name: BloodRP
 version: '1.0-SNAPSHOT'
-main: boo.bloodstone.bloodsex.BloodRP
+main: boo.bloodstone.bloodrp.BloodRP
 api-version: '1.21.11'
 folia-supported: true
 
