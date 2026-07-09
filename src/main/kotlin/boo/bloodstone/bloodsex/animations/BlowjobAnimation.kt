@@ -8,8 +8,8 @@ class BlowjobAnimation : AnimationAction("предложил сделать ва
     private val cumAnimation = CumAnimation()
 
     override fun play(firstPlayer: Player, secondPlayer: Player) {
-        val movingPlayer = firstPlayer
-        val sittingPlayer = secondPlayer
+        val sittingPlayer = firstPlayer
+        val movingPlayer = secondPlayer
 
         if (!GSitAPI.isEntitySitting(sittingPlayer)) {
             sittingPlayer.sendMessage("Присядь сначала")
