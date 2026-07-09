@@ -18,6 +18,7 @@ import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.toKotlinUuid
 
 class MarryAnimation : AnimationAction("сделал вам предложение") {
     override fun play(firstPlayer: Player, secondPlayer: Player) {
@@ -75,8 +76,8 @@ class MarryAnimation : AnimationAction("сделал вам предложени
 
         transaction {
             MarriagesTable.insert {
-                it[MarriagesTable.husband] = husband.uniqueId
-                it[MarriagesTable.wife] = wife.uniqueId
+                it[MarriagesTable.husband] = husband.uniqueId.toKotlinUuid()
+                it[MarriagesTable.wife] = wife.uniqueId.toKotlinUuid()
                 it[MarriagesTable.startedAt] = now
                 it[MarriagesTable.lastInteractionAt] = now
             }
