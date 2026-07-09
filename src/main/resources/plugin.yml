@@ -14,5 +14,8 @@ permissions:
   bloodrp.rape.immune:
     description: Players with this permission cannot be raped
     default: false
+  bloodrp.reload:
+    description: Allows reloading BloodRP config at runtime
+    default: op
 
 depend: [CommonBloodLib, GSit, BetterModel]

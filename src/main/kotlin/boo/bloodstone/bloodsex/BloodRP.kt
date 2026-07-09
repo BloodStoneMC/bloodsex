@@ -2,8 +2,11 @@ package boo.bloodstone.bloodsex
 
 import boo.bloodstone.bloodsex.animations.BlowjobAnimation
 import boo.bloodstone.bloodsex.animations.DoggyAnimation
+import boo.bloodstone.bloodsex.animations.KissAnimation
 import boo.bloodstone.bloodsex.animations.MarryAnimation
 import boo.bloodstone.bloodsex.commands.BloodRPCommandRegistrar
+import boo.bloodstone.bloodsex.config.BloodRPConfig
+import boo.bloodstone.bloodsex.config.BloodRPConfigLoader
 import boo.bloodstone.bloodsex.database.MarriagesTable
 import boo.bloodstone.commonBloodLib.Scheduler
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
@@ -19,6 +22,8 @@ class BloodRP : JavaPlugin() {
     override fun onEnable() {
         plugin = this
 
+        saveDefaultConfig()
+        applyRuntimeConfig(loadConfig())
         scheduler = Scheduler(this)
         setupDatabase()
         registerActions()
@@ -31,9 +36,22 @@ class BloodRP : JavaPlugin() {
         // Plugin shutdown logic
     }
 
+    fun reloadRuntimeConfig() {
+        reloadConfig()
+        applyRuntimeConfig(loadConfig())
+    }
+
+    private fun loadConfig(): BloodRPConfig =
+        BloodRPConfigLoader.load(getConfig())
+
+    private fun applyRuntimeConfig(config: BloodRPConfig) {
+        Companion.config = config
+    }
+
     private fun registerActions() {
         ActionMaster.register("bj", BlowjobAnimation())
         ActionMaster.register("doggy", DoggyAnimation())
+        ActionMaster.register("kiss", KissAnimation())
         ActionMaster.register("marry", MarryAnimation())
     }
 
@@ -75,7 +93,10 @@ class BloodRP : JavaPlugin() {
     }
 
     companion object {
-        var plugin: BloodRP? = null
+        lateinit var plugin: BloodRP
+            private set
+
+        lateinit var config: BloodRPConfig
         lateinit var scheduler: Scheduler
 
         private val betterModelModels = listOf(

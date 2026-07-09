@@ -1,5 +1,6 @@
 package boo.bloodstone.bloodsex.commands
 
+import boo.bloodstone.bloodsex.BloodRP
 import boo.bloodstone.bloodsex.RequestManager
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
@@ -27,7 +28,7 @@ object AcceptCommand : BloodRPCommand {
         val request = RequestManager.getPendingRequest(sender) ?: return 0
 
         val isTooFar = sender.location.world != requester.location.world ||
-            sender.location.distance(requester.location) > MAX_ACTION_DISTANCE
+            sender.location.distance(requester.location) > BloodRP.config.maxActionDistance
 
         if (isTooFar) {
             sender.sendMessage("Вы слишком далеко от партнера")

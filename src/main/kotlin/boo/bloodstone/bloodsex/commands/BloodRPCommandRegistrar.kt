@@ -5,6 +5,7 @@ import io.papermc.paper.command.brigadier.Commands
 object BloodRPCommandRegistrar {
     fun register(commands: Commands) {
         commands.register(RequestActionCommand("bj").node().build(), "Предложить bj")
+        commands.register(RequestActionCommand("kiss").node().build(), "Предложить поцелуй")
         commands.register(
             RequestActionCommand("doggy").node().build(),
             "Предложить doggy",
@@ -15,6 +16,7 @@ object BloodRPCommandRegistrar {
         commands.register(
             Commands.literal("bloodrp")
                 .then(AcceptCommand.node())
+                .then(ReloadCommand.node())
                 .build(),
             "BloodRP commands"
         )

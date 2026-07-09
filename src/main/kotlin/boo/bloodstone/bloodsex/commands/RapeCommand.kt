@@ -1,6 +1,7 @@
 package boo.bloodstone.bloodsex.commands
 
 import boo.bloodstone.bloodsex.ActionMaster
+import boo.bloodstone.bloodsex.BloodRP
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -45,7 +46,7 @@ object RapeCommand : BloodRPCommand {
         }
 
         val isTooFar = sender.location.world != partner.location.world ||
-            sender.location.distance(partner.location) > MAX_RAPE_DISTANCE
+            sender.location.distance(partner.location) > BloodRP.config.maxRapeDistance
 
         if (isTooFar) {
             sender.sendMessage("Вы слишком далеко от партнера")
