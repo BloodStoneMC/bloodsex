@@ -5,4 +5,6 @@ data class BloodRPConfig(
     val maxRapeDistance: Double,
     val topMarriagesHeader: String,
     val topMarriagesFooter: String,
+    val maxDaysWithoutInteraction: Long,
+    val warningDaysWithoutInteraction: Long,
 )

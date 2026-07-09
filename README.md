@@ -11,6 +11,7 @@ BloodRP добавляет RP-действия между игроками, си
 - Автоматический поцелуй при sneaking рядом с супругом.
 - Автоматическая неблокирующая проверка PDC брака при входе игрока.
 - Обновление `last_interaction_at` при поцелуе супругов.
+- Автоматический распад брака при долгом отсутствии взаимодействий.
 - Топ браков по длительности через `/marry top`.
 - Настраиваемые дистанции и MiniMessage header/footer для топа.
 
@@ -97,6 +98,8 @@ BloodRP добавляет RP-действия между игроками, си
 ```yaml
 maxActionDistance: 16.0
 maxRapeDistance: 5.0
+maxDaysWithoutInteraction: 14
+warningDaysWithoutInteraction: 13
 
 topMarriages:
   header: "<gold><bold>Топ браков</bold></gold>"
@@ -109,6 +112,8 @@ topMarriages:
 |-----------------------|-----------------------------------------------------------|
 | `maxActionDistance`   | Максимальная дистанция для принятия обычного запроса.     |
 | `maxRapeDistance`     | Максимальная дистанция для direct-действий через `/rape`. |
+| `maxDaysWithoutInteraction` | Через сколько дней без поцелуя брак распадется.      |
+| `warningDaysWithoutInteraction` | Через сколько дней без поцелуя предупреждать при входе. |
 | `topMarriages.header` | MiniMessage-строка перед списком браков.                  |
 | `topMarriages.footer` | MiniMessage-строка после списка браков.                   |
 

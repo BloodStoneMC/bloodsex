@@ -15,5 +15,7 @@ object BloodRPConfigLoader {
                 "topMarriages.footer",
                 "<gray>Новые браки попадают сюда автоматически.</gray>"
             )!!,
+            maxDaysWithoutInteraction = config.getLong("maxDaysWithoutInteraction", 14L),
+            warningDaysWithoutInteraction = config.getLong("warningDaysWithoutInteraction", 13L),
         )
 }

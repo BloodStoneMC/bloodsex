@@ -1,5 +1,7 @@
 maxActionDistance: 16.0
 maxRapeDistance: 5.0
+maxDaysWithoutInteraction: 14
+warningDaysWithoutInteraction: 13
 
 topMarriages:
   header: "<gold><bold>Топ браков</bold></gold>"

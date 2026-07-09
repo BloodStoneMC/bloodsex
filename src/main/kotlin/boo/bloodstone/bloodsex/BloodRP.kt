@@ -10,6 +10,7 @@ import boo.bloodstone.bloodsex.config.BloodRPConfigLoader
 import boo.bloodstone.bloodsex.database.MarriagesTable
 import boo.bloodstone.bloodsex.listeners.MarriageKissListener
 import boo.bloodstone.bloodsex.listeners.MarriagePdcCleanupListener
+import boo.bloodstone.bloodsex.tasks.MarriageInteractionExpirationTask
 import boo.bloodstone.commonBloodLib.Scheduler
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +37,7 @@ class BloodRP : JavaPlugin() {
         registerActions()
         registerCommands()
         registerListeners()
+        startTasks()
 
         installBetterModelResources()
     }
@@ -85,6 +87,10 @@ class BloodRP : JavaPlugin() {
     private fun registerListeners() {
         server.pluginManager.registerEvents(MarriageKissListener, this)
         server.pluginManager.registerEvents(MarriagePdcCleanupListener, this)
+    }
+
+    private fun startTasks() {
+        MarriageInteractionExpirationTask.start()
     }
 
     private fun installBetterModelResources() {
