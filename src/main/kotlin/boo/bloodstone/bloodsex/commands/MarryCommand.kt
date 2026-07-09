@@ -1,6 +1,7 @@
 package boo.bloodstone.bloodsex.commands
 
 import boo.bloodstone.bloodsex.ActionMaster
+import boo.bloodstone.bloodsex.PARTNER_ARGUMENT
 import boo.bloodstone.bloodsex.RequestManager
 import boo.bloodstone.bloodsex.animations.MarryAnimation
 import com.mojang.brigadier.Command
@@ -16,6 +17,7 @@ class MarryCommand : BloodRPCommand {
     override fun node(): LiteralArgumentBuilder<CommandSourceStack> =
         Commands.literal(ACTION_NAME)
             .requires { it.sender is Player && it.sender.hasPermission(BloodRPPermissions.SEX) }
+            .then(MarryTopCommand().node())
             .then(
                 Commands.argument(PARTNER_ARGUMENT, ArgumentTypes.player())
                     .executes { context -> execute(context) }

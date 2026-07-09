@@ -15,5 +15,6 @@ object MarriagesTable : IntIdTable("marriages") {
     init {
         index(false, husband)
         index(false, wife)
+        index(false, startedAt)
     }
 }

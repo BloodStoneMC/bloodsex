@@ -8,8 +8,14 @@ import boo.bloodstone.bloodsex.commands.BloodRPCommandRegistrar
 import boo.bloodstone.bloodsex.config.BloodRPConfig
 import boo.bloodstone.bloodsex.config.BloodRPConfigLoader
 import boo.bloodstone.bloodsex.database.MarriagesTable
+import boo.bloodstone.bloodsex.listeners.MarriageKissListener
+import boo.bloodstone.bloodsex.listeners.MarriagePdcCleanupListener
 import boo.bloodstone.commonBloodLib.Scheduler
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
@@ -25,15 +31,17 @@ class BloodRP : JavaPlugin() {
         saveDefaultConfig()
         applyRuntimeConfig(loadConfig())
         scheduler = Scheduler(this)
+        coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         setupDatabase()
         registerActions()
         registerCommands()
+        registerListeners()
 
         installBetterModelResources()
     }
 
     override fun onDisable() {
-        // Plugin shutdown logic
+        coroutineScope.cancel()
     }
 
     fun reloadRuntimeConfig() {
@@ -74,6 +82,11 @@ class BloodRP : JavaPlugin() {
         }
     }
 
+    private fun registerListeners() {
+        server.pluginManager.registerEvents(MarriageKissListener, this)
+        server.pluginManager.registerEvents(MarriagePdcCleanupListener, this)
+    }
+
     private fun installBetterModelResources() {
         val pluginsDirectory = dataFolder.toPath().parent ?: dataFolder.toPath()
         val destination = pluginsDirectory.resolve("BetterModel/models/bloodsex")
@@ -98,6 +111,7 @@ class BloodRP : JavaPlugin() {
 
         lateinit var config: BloodRPConfig
         lateinit var scheduler: Scheduler
+        lateinit var coroutineScope: CoroutineScope
 
         private val betterModelModels = listOf(
             "bloodsex_doggy_active",

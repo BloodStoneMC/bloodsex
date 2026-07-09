@@ -7,5 +7,13 @@ object BloodRPConfigLoader {
         BloodRPConfig(
             maxActionDistance = config.getDouble("maxActionDistance", 16.0),
             maxRapeDistance = config.getDouble("maxRapeDistance", 5.0),
+            topMarriagesHeader = config.getString(
+                "topMarriages.header",
+                "<gold><bold>Топ браков</bold></gold>"
+            )!!,
+            topMarriagesFooter = config.getString(
+                "topMarriages.footer",
+                "<gray>Новые браки попадают сюда автоматически.</gray>"
+            )!!,
         )
 }

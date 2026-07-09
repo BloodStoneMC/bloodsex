@@ -2,6 +2,7 @@ package boo.bloodstone.bloodsex.animations
 
 import boo.bloodstone.bloodsex.BloodRP
 import boo.bloodstone.bloodsex.database.MarriagesTable
+import boo.bloodstone.bloodsex.setMarriagePartner
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -9,12 +10,10 @@ import org.bukkit.Bukkit
 import org.bukkit.Color
 import org.bukkit.FireworkEffect
 import org.bukkit.Material
-import org.bukkit.NamespacedKey
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
-import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.or
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -33,8 +32,8 @@ class MarryAnimation : AnimationAction("сделал вам предложени
         }
 
         saveMarriage(firstPlayer, secondPlayer)
-        setPartnerUuid(firstPlayer, secondPlayer)
-        setPartnerUuid(secondPlayer, firstPlayer)
+        firstPlayer.setMarriagePartner(secondPlayer)
+        secondPlayer.setMarriagePartner(firstPlayer)
 
         val firework = firstPlayer.world.spawnEntity(
             firstPlayer.location,
@@ -96,10 +95,6 @@ class MarryAnimation : AnimationAction("сделал вам предложени
         }
     }
 
-    private fun setPartnerUuid(player: Player, partner: Player) {
-        player.persistentDataContainer.set(partnerUuidKey, PersistentDataType.STRING, partner.uniqueId.toString())
-    }
-
     private fun notifyIfAlreadyMarried(firstPlayer: Player, secondPlayer: Player): Boolean {
         val marriedPlayers = getMarriedPlayers(firstPlayer, secondPlayer)
 
@@ -114,8 +109,6 @@ class MarryAnimation : AnimationAction("сделал вам предложени
     }
 
     companion object {
-        private val partnerUuidKey = NamespacedKey("bloodrp", "marriage_partner_uuid")
-
         @OptIn(ExperimentalUuidApi::class)
         fun getMarriedPlayers(firstPlayer: Player, secondPlayer: Player): List<Player> {
             return listOf(firstPlayer, secondPlayer).filter { isMarried(it.uniqueId.toKotlinUuid()) }

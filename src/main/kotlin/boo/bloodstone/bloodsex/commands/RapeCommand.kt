@@ -2,6 +2,7 @@ package boo.bloodstone.bloodsex.commands
 
 import boo.bloodstone.bloodsex.ActionMaster
 import boo.bloodstone.bloodsex.BloodRP
+import boo.bloodstone.bloodsex.PARTNER_ARGUMENT
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.builder.LiteralArgumentBuilder

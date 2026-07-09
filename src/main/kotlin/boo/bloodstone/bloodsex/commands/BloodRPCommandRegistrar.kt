@@ -12,6 +12,7 @@ object BloodRPCommandRegistrar {
             listOf("sex")
         )
         commands.register(MarryCommand().node().build(), "Предложить свадьбу")
+        commands.register(DivorceCommand().node().build(), "Развестись", listOf("divorce"))
         commands.register(RapeCommand.node().build(), "Выполнить действие без подтверждения")
         commands.register(
             Commands.literal("bloodrp")

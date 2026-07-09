@@ -1,6 +1,7 @@
 package boo.bloodstone.bloodsex.commands
 
 import boo.bloodstone.bloodsex.BloodRP
+import boo.bloodstone.bloodsex.PARTNER_ARGUMENT
 import boo.bloodstone.bloodsex.RequestManager
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext

@@ -1,2 +1,6 @@
 maxActionDistance: 16.0
 maxRapeDistance: 5.0
+
+topMarriages:
+  header: "<gold><bold>Топ браков</bold></gold>"
+  footer: "<gray>Новые браки попадают сюда автоматически.</gray>"
