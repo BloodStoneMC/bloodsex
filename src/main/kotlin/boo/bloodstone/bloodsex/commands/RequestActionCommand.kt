@@ -12,15 +12,15 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import org.bukkit.entity.Player
 
 class RequestActionCommand(private val actionName: String) : BloodRPCommand {
-    override fun node(requestManager: RequestManager): LiteralArgumentBuilder<CommandSourceStack> =
+    override fun node(): LiteralArgumentBuilder<CommandSourceStack> =
         Commands.literal(actionName)
             .requires { it.sender is Player && it.sender.hasPermission(BloodRPPermissions.SEX) }
             .then(
                 Commands.argument(PARTNER_ARGUMENT, ArgumentTypes.player())
-                    .executes { context -> execute(context, requestManager) }
+                    .executes { context -> execute(context) }
             )
 
-    private fun execute(context: CommandContext<CommandSourceStack>, requestManager: RequestManager): Int {
+    private fun execute(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender as? Player ?: return 0
         val partner = context.getArgument(PARTNER_ARGUMENT, PlayerSelectorArgumentResolver::class.java)
             .resolve(context.source)
@@ -32,7 +32,7 @@ class RequestActionCommand(private val actionName: String) : BloodRPCommand {
         }
 
         val action = ActionMaster.fromName(actionName) ?: return 0
-        requestManager.setPendingPartner(partner, sender, action)
+        RequestManager.setPendingPartner(partner, sender, action)
         return Command.SINGLE_SUCCESS
     }
 }

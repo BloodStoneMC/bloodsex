@@ -8,13 +8,16 @@ class BlowjobAnimation : AnimationAction("предложил сделать ва
     private val cumAnimation = CumAnimation()
 
     override fun play(firstPlayer: Player, secondPlayer: Player) {
-        if (!GSitAPI.isEntitySitting(firstPlayer)) {
-            firstPlayer.sendMessage("Присядь сначала")
-            secondPlayer.sendMessage("Ваш партнер не сидит")
+        val movingPlayer = firstPlayer
+        val sittingPlayer = secondPlayer
+
+        if (!GSitAPI.isEntitySitting(sittingPlayer)) {
+            sittingPlayer.sendMessage("Присядь сначала")
+            movingPlayer.sendMessage("Ваш партнер не сидит")
             return
         }
 
-        val yaw = firstPlayer.yaw;
+        val yaw = sittingPlayer.yaw;
         var newYaw: Float;
 
         if (yaw > 0) {
@@ -23,7 +26,7 @@ class BlowjobAnimation : AnimationAction("предложил сделать ва
             newYaw = yaw + 180f
         }
 
-        val newLocation = firstPlayer.location.clone()
+        val newLocation = sittingPlayer.location.clone()
 
         if (yaw in -45.0..45.0) {
             newLocation.z += 0.8
@@ -41,13 +44,13 @@ class BlowjobAnimation : AnimationAction("предложил сделать ва
         newLocation.y -= 0.5
         newLocation.yaw = newYaw
         newLocation.pitch = 50.0F
-        secondPlayer.teleportAsync(newLocation)
+        movingPlayer.teleportAsync(newLocation)
 
         var tickCounter = 0;
         var isPitchLowering = true;
         val scheduler = BloodRP.scheduler
 
-        val task = scheduler.runInRegionAtFixedRate(firstPlayer.location, 1, 1) {
+        val task = scheduler.runInRegionAtFixedRate(sittingPlayer.location, 1, 1) {
             if (isPitchLowering) {
                 newLocation.pitch -= 2.0f
             } else {
@@ -58,12 +61,12 @@ class BlowjobAnimation : AnimationAction("предложил сделать ва
                 isPitchLowering = !isPitchLowering
             }
 
-            secondPlayer.teleportAsync(newLocation)
+            movingPlayer.teleportAsync(newLocation)
             tickCounter++;
         }
 
-        scheduler.runInRegionLater(firstPlayer.location, 30 * 20) {
-            cumAnimation.play(firstPlayer.location.clone())
+        scheduler.runInRegionLater(sittingPlayer.location, 30 * 20) {
+            cumAnimation.play(sittingPlayer.location.clone())
             task.cancel()
         }
     }

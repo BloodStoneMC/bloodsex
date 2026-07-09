@@ -4,9 +4,14 @@ import boo.bloodstone.bloodsex.animations.BlowjobAnimation
 import boo.bloodstone.bloodsex.animations.DoggyAnimation
 import boo.bloodstone.bloodsex.animations.MarryAnimation
 import boo.bloodstone.bloodsex.commands.BloodRPCommandRegistrar
+import boo.bloodstone.bloodsex.database.MarriagesTable
 import boo.bloodstone.commonBloodLib.Scheduler
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
 import org.bukkit.plugin.java.JavaPlugin
+import org.jetbrains.exposed.v1.jdbc.Database
+import org.jetbrains.exposed.v1.jdbc.SchemaUtils
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
@@ -14,10 +19,10 @@ class BloodRP : JavaPlugin() {
     override fun onEnable() {
         plugin = this
 
-        val requestManager = RequestManager()
         scheduler = Scheduler(this)
+        setupDatabase()
         registerActions()
-        registerCommands(requestManager)
+        registerCommands()
 
         installBetterModelResources()
     }
@@ -32,9 +37,22 @@ class BloodRP : JavaPlugin() {
         ActionMaster.register("marry", MarryAnimation())
     }
 
-    private fun registerCommands(requestManager: RequestManager) {
+    private fun setupDatabase() {
+        if (!dataFolder.exists()) {
+            dataFolder.mkdirs()
+        }
+
+        val databaseFile = File(dataFolder, "data").absolutePath
+        Database.connect("jdbc:h2:file:$databaseFile;DB_CLOSE_DELAY=-1;CACHE_SIZE=8192", driver = "org.h2.Driver")
+
+        transaction {
+            SchemaUtils.create(MarriagesTable)
+        }
+    }
+
+    private fun registerCommands() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-            BloodRPCommandRegistrar.register(event.registrar(), requestManager)
+            BloodRPCommandRegistrar.register(event.registrar())
         }
     }
 

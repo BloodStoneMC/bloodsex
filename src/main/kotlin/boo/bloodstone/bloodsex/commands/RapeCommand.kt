@@ -1,7 +1,6 @@
 package boo.bloodstone.bloodsex.commands
 
 import boo.bloodstone.bloodsex.ActionMaster
-import boo.bloodstone.bloodsex.RequestManager
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.context.CommandContext
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
@@ -12,7 +11,7 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import org.bukkit.entity.Player
 
 object RapeCommand : BloodRPCommand {
-    override fun node(requestManager: RequestManager): LiteralArgumentBuilder<CommandSourceStack> {
+    override fun node(): LiteralArgumentBuilder<CommandSourceStack> {
         val root = Commands.literal("rape")
             .requires { it.sender is Player && it.sender.hasPermission(BloodRPPermissions.RAPE) }
 
@@ -54,11 +53,7 @@ object RapeCommand : BloodRPCommand {
         }
 
         val action = ActionMaster.fromName(actionName) ?: return 0
-        if (actionName == "bj") {
-            action.play(sender, partner)
-        } else {
-            action.play(partner, sender)
-        }
+        action.play(sender, partner)
         return Command.SINGLE_SUCCESS
     }
 

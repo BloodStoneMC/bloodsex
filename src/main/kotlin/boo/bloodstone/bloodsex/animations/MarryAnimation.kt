@@ -1,6 +1,7 @@
 package boo.bloodstone.bloodsex.animations
 
 import boo.bloodstone.bloodsex.BloodRP
+import boo.bloodstone.bloodsex.database.MarriagesTable
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -12,9 +13,16 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Firework
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.jetbrains.exposed.v1.jdbc.insert
+import org.jetbrains.exposed.v1.jdbc.transactions.transaction
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlin.uuid.ExperimentalUuidApi
 
 class MarryAnimation : AnimationAction("сделал вам предложение") {
     override fun play(firstPlayer: Player, secondPlayer: Player) {
+        saveMarriage(firstPlayer, secondPlayer)
+
         val firework = firstPlayer.world.spawnEntity(
             firstPlayer.location,
             EntityType.FIREWORK_ROCKET
@@ -58,6 +66,20 @@ class MarryAnimation : AnimationAction("сделал вам предложени
         for (player in Bukkit.getOnlinePlayers()) {
             player.sendMessage("Теперь ${firstPlayer.name} и ${secondPlayer.name} женаты!!!")
             player.sendMessage("Поздравим их")
+        }
+    }
+
+    @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
+    private fun saveMarriage(husband: Player, wife: Player) {
+        val now = Clock.System.now()
+
+        transaction {
+            MarriagesTable.insert {
+                it[MarriagesTable.husband] = husband.uniqueId
+                it[MarriagesTable.wife] = wife.uniqueId
+                it[MarriagesTable.startedAt] = now
+                it[MarriagesTable.lastInteractionAt] = now
+            }
         }
     }
 }

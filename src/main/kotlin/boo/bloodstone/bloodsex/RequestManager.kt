@@ -2,16 +2,16 @@ package boo.bloodstone.bloodsex
 
 import org.bukkit.entity.Player
 
-class RequestManager {
-    private val pendingRequests: MutableMap<Player, Pair<Player, Action>> = mutableMapOf()
+object RequestManager {
+    private val pendingRequests: MutableMap<Player, ActionRequest> = mutableMapOf()
 
-    fun getPendingPartner(player: Player): Pair<Player, Action>? {
+    fun getPendingRequest(player: Player): ActionRequest? {
         return pendingRequests[player]
     }
 
     fun setPendingPartner(partner: Player, sender: Player, action: Action) {
         action.notify(sender, partner)
-        pendingRequests[partner] = Pair(sender, action)
+        pendingRequests[partner] = ActionRequest(sender, action)
     }
 
     fun removeRequestFrom(player: Player) {

@@ -14,10 +14,10 @@ import kotlin.jvm.optionals.getOrNull
 
 class DoggyAnimation : AnimationAction("предложил вам догги-стайл") {
     override fun play(firstPlayer: Player, secondPlayer: Player) {
-        val session = start(secondPlayer, firstPlayer)
+        val session = start(firstPlayer, secondPlayer)
 
-        BloodRP.scheduler.runInRegionLater(secondPlayer.location, 30 * 20) {
-            stop(secondPlayer, firstPlayer, session)
+        BloodRP.scheduler.runInRegionLater(firstPlayer.location, 30 * 20) {
+            stop(firstPlayer, secondPlayer, session)
         }
     }
 

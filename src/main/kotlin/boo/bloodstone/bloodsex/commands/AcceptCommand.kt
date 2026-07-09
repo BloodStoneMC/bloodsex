@@ -11,20 +11,20 @@ import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSele
 import org.bukkit.entity.Player
 
 object AcceptCommand : BloodRPCommand {
-    override fun node(requestManager: RequestManager): LiteralArgumentBuilder<CommandSourceStack> =
+    override fun node(): LiteralArgumentBuilder<CommandSourceStack> =
         Commands.literal("accept")
             .requires { it.sender is Player && it.sender.hasPermission(BloodRPPermissions.SEX) }
             .then(
                 Commands.argument(PARTNER_ARGUMENT, ArgumentTypes.player())
-                    .executes { context -> execute(context, requestManager) }
+                    .executes { context -> execute(context) }
             )
 
-    private fun execute(context: CommandContext<CommandSourceStack>, requestManager: RequestManager): Int {
+    private fun execute(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender as? Player ?: return 0
         val requester = context.getArgument(PARTNER_ARGUMENT, PlayerSelectorArgumentResolver::class.java)
             .resolve(context.source)
             .firstOrNull() ?: return 0
-        val (pendingRequester, action) = requestManager.getPendingPartner(sender) ?: return 0
+        val request = RequestManager.getPendingRequest(sender) ?: return 0
 
         val isTooFar = sender.location.world != requester.location.world ||
             sender.location.distance(requester.location) > MAX_ACTION_DISTANCE
@@ -34,11 +34,12 @@ object AcceptCommand : BloodRPCommand {
             return 0
         }
 
-        if (pendingRequester == requester) {
-            action.play(sender, requester)
+        if (request.requester != requester) {
+            return 0
         }
 
-        requestManager.removeRequestFrom(sender)
+        request.action.play(requester, sender)
+        RequestManager.removeRequestFrom(sender)
         return Command.SINGLE_SUCCESS
     }
 }
