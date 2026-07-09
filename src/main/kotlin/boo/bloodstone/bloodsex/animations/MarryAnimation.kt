@@ -17,7 +17,7 @@ import org.bukkit.inventory.ItemStack
 import org.bukkit.persistence.PersistentDataType
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.or
-import org.jetbrains.exposed.v1.jdbc.insertAndGetId
+import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import kotlin.time.Clock
@@ -32,9 +32,9 @@ class MarryAnimation : AnimationAction("сделал вам предложени
             return
         }
 
-        val marriageId = saveMarriage(firstPlayer, secondPlayer)
-        setMarriageId(firstPlayer, marriageId)
-        setMarriageId(secondPlayer, marriageId)
+        saveMarriage(firstPlayer, secondPlayer)
+        setPartnerUuid(firstPlayer, secondPlayer)
+        setPartnerUuid(secondPlayer, firstPlayer)
 
         val firework = firstPlayer.world.spawnEntity(
             firstPlayer.location,
@@ -83,21 +83,21 @@ class MarryAnimation : AnimationAction("сделал вам предложени
     }
 
     @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
-    private fun saveMarriage(husband: Player, wife: Player): Int {
+    private fun saveMarriage(husband: Player, wife: Player) {
         val now = Clock.System.now()
 
-        return transaction {
-            MarriagesTable.insertAndGetId {
+        transaction {
+            MarriagesTable.insert {
                 it[MarriagesTable.husband] = husband.uniqueId.toKotlinUuid()
                 it[MarriagesTable.wife] = wife.uniqueId.toKotlinUuid()
                 it[MarriagesTable.startedAt] = now
                 it[MarriagesTable.lastInteractionAt] = now
-            }.value
+            }
         }
     }
 
-    private fun setMarriageId(player: Player, marriageId: Int) {
-        player.persistentDataContainer.set(marriageIdKey, PersistentDataType.INTEGER, marriageId)
+    private fun setPartnerUuid(player: Player, partner: Player) {
+        player.persistentDataContainer.set(partnerUuidKey, PersistentDataType.STRING, partner.uniqueId.toString())
     }
 
     private fun notifyIfAlreadyMarried(firstPlayer: Player, secondPlayer: Player): Boolean {
@@ -114,7 +114,7 @@ class MarryAnimation : AnimationAction("сделал вам предложени
     }
 
     companion object {
-        private val marriageIdKey = NamespacedKey("bloodrp", "marriage_id")
+        private val partnerUuidKey = NamespacedKey("bloodrp", "marriage_partner_uuid")
 
         @OptIn(ExperimentalUuidApi::class)
         fun getMarriedPlayers(firstPlayer: Player, secondPlayer: Player): List<Player> {
