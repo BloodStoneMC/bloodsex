@@ -28,20 +28,20 @@ BloodRP добавляет RP-действия между игроками, си
 
 ## Команды
 
-| Команда                    | Право            | Что делает                               |
-|----------------------------|------------------|------------------------------------------|
-| `/bj <player>`             | `bloodrp.sex`    | Отправляет игроку запрос на `bj`.        |
-| `/doggy <player>`          | `bloodrp.sex`    | Отправляет игроку запрос на `doggy`.     |
-| `/sex <player>`            | `bloodrp.sex`    | Алиас для `/doggy <player>`.             |
-| `/kiss <player>`           | `bloodrp.sex`    | Отправляет игроку запрос на поцелуй.     |
-| `/marry <player>`          | `bloodrp.sex`    | Отправляет игроку предложение брака.     |
-| `/marry top`               | `bloodrp.sex`    | Показывает топ 10 самых долгих браков.   |
-| `/unmarry`                 | `bloodrp.sex`    | Разводит игрока с текущим супругом.      |
-| `/divorce`                 | `bloodrp.sex`    | Алиас для `/unmarry`.                    |
-| `/bloodrp accept <request-id>` | `bloodrp.sex` | Принимает конкретный запрос по ID.       |
-| `/bloodrp reload`          | `bloodrp.reload` | Перезагружает `config.yml` без рестарта. |
-| `/rape bj <player>`        | `bloodrp.rape`   | Запускает `bj` без подтверждения.        |
-| `/rape doggy <player>`     | `bloodrp.rape`   | Запускает `doggy` без подтверждения.     |
+| Команда                        | Право            | Что делает                               |
+|--------------------------------|------------------|------------------------------------------|
+| `/bj <player>`                 | `bloodrp.sex`    | Отправляет игроку запрос на `bj`.        |
+| `/doggy <player>`              | `bloodrp.sex`    | Отправляет игроку запрос на `doggy`.     |
+| `/sex <player>`                | `bloodrp.sex`    | Алиас для `/doggy <player>`.             |
+| `/kiss <player>`               | `bloodrp.sex`    | Отправляет игроку запрос на поцелуй.     |
+| `/marry <player>`              | `bloodrp.sex`    | Отправляет игроку предложение брака.     |
+| `/marry top`                   | `bloodrp.sex`    | Показывает топ 10 самых долгих браков.   |
+| `/unmarry`                     | `bloodrp.sex`    | Разводит игрока с текущим супругом.      |
+| `/divorce`                     | `bloodrp.sex`    | Алиас для `/unmarry`.                    |
+| `/bloodrp accept <request-id>` | `bloodrp.sex`    | Принимает конкретный запрос по ID.       |
+| `/bloodrp reload`              | `bloodrp.reload` | Перезагружает `config.yml` без рестарта. |
+| `/rape bj <player>`            | `bloodrp.rape`   | Запускает `bj` без подтверждения.        |
+| `/rape doggy <player>`         | `bloodrp.rape`   | Запускает `doggy` без подтверждения.     |
 
 ## Права
 
@@ -117,7 +117,7 @@ topMarriages:
 | `maxRapeDistance`               | Максимальная дистанция для direct-действий через `/rape`. |
 | `maxDaysWithoutInteraction`     | Через сколько дней без поцелуя брак распадется.           |
 | `warningDaysWithoutInteraction` | Через сколько дней без поцелуя предупреждать при входе.   |
-| `sneakKissCooldownSeconds`       | Кулдаун автопоцелуя супругов при sneaking, в секундах.    |
+| `sneakKissCooldownSeconds`      | Кулдаун автопоцелуя супругов при sneaking, в секундах.    |
 | `topMarriages.header`           | MiniMessage-строка перед списком браков.                  |
 | `topMarriages.footer`           | MiniMessage-строка после списка браков.                   |
 
