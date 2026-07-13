@@ -7,4 +7,5 @@ data class BloodRPConfig(
     val topMarriagesFooter: String,
     val maxDaysWithoutInteraction: Long,
     val warningDaysWithoutInteraction: Long,
+    val sneakKissCooldownSeconds: Long,
 )

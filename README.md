@@ -9,7 +9,7 @@ BloodRP добавляет RP-действия между игроками, си
 - Брак через `/marry <player>` с подтверждением второй стороны.
 - Развод через `/unmarry` или `/divorce`.
 - Автоматический поцелуй при sneaking рядом с супругом.
-- Автоматическая неблокирующая проверка PDC брака при входе игрока.
+- Автоматическая неблокирующая синхронизация PDC брака с базой данных при входе игрока.
 - Обновление `last_interaction_at` при поцелуе супругов.
 - Автоматический распад брака при долгом отсутствии взаимодействий.
 - Топ браков по длительности через `/marry top`.
@@ -38,7 +38,7 @@ BloodRP добавляет RP-действия между игроками, си
 | `/marry top`               | `bloodrp.sex`    | Показывает топ 10 самых долгих браков.   |
 | `/unmarry`                 | `bloodrp.sex`    | Разводит игрока с текущим супругом.      |
 | `/divorce`                 | `bloodrp.sex`    | Алиас для `/unmarry`.                    |
-| `/bloodrp accept <player>` | `bloodrp.sex`    | Принимает запрос от указанного игрока.   |
+| `/bloodrp accept <request-id>` | `bloodrp.sex` | Принимает конкретный запрос по ID.       |
 | `/bloodrp reload`          | `bloodrp.reload` | Перезагружает `config.yml` без рестарта. |
 | `/rape bj <player>`        | `bloodrp.rape`   | Запускает `bj` без подтверждения.        |
 | `/rape doggy <player>`     | `bloodrp.rape`   | Запускает `doggy` без подтверждения.     |
@@ -71,8 +71,10 @@ BloodRP добавляет RP-действия между игроками, си
 Второй игрок получит сообщение с кнопкой принятия. Также можно принять вручную:
 
 ```text
-/bloodrp accept YourName
+/bloodrp accept <request-id из кнопки>
 ```
+
+ID привязывает принятие к конкретному действию и действует одну минуту.
 
 ## Топ браков
 
@@ -100,6 +102,7 @@ maxActionDistance: 16.0
 maxRapeDistance: 5.0
 maxDaysWithoutInteraction: 14
 warningDaysWithoutInteraction: 13
+sneakKissCooldownSeconds: 5
 
 topMarriages:
   header: "<gold><bold>Топ браков</bold></gold>"
@@ -114,6 +117,7 @@ topMarriages:
 | `maxRapeDistance`               | Максимальная дистанция для direct-действий через `/rape`. |
 | `maxDaysWithoutInteraction`     | Через сколько дней без поцелуя брак распадется.           |
 | `warningDaysWithoutInteraction` | Через сколько дней без поцелуя предупреждать при входе.   |
+| `sneakKissCooldownSeconds`       | Кулдаун автопоцелуя супругов при sneaking, в секундах.    |
 | `topMarriages.header`           | MiniMessage-строка перед списком браков.                  |
 | `topMarriages.footer`           | MiniMessage-строка после списка браков.                   |
 

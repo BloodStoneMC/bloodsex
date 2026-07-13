@@ -1,32 +1,34 @@
 package boo.bloodstone.bloodrp.commands
 
 import boo.bloodstone.bloodrp.BloodRP
-import boo.bloodstone.bloodrp.PARTNER_ARGUMENT
+import boo.bloodstone.bloodrp.REQUEST_ARGUMENT
 import boo.bloodstone.bloodrp.RequestManager
 import com.mojang.brigadier.Command
-import com.mojang.brigadier.context.CommandContext
+import com.mojang.brigadier.arguments.StringArgumentType
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
+import com.mojang.brigadier.context.CommandContext
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes
-import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.util.UUID
 
 object AcceptCommand : BloodRPCommand {
     override fun node(): LiteralArgumentBuilder<CommandSourceStack> =
         Commands.literal("accept")
             .requires { it.sender is Player && it.sender.hasPermission(BloodRPPermissions.SEX) }
             .then(
-                Commands.argument(PARTNER_ARGUMENT, ArgumentTypes.player())
+                Commands.argument(REQUEST_ARGUMENT, StringArgumentType.word())
                     .executes { context -> execute(context) }
             )
 
     private fun execute(context: CommandContext<CommandSourceStack>): Int {
         val sender = context.source.sender as? Player ?: return 0
-        val requester = context.getArgument(PARTNER_ARGUMENT, PlayerSelectorArgumentResolver::class.java)
-            .resolve(context.source)
-            .firstOrNull() ?: return 0
-        val request = RequestManager.getPendingRequest(sender) ?: return 0
+        val requestId = runCatching {
+            UUID.fromString(StringArgumentType.getString(context, REQUEST_ARGUMENT))
+        }.getOrNull() ?: return 0
+        val request = RequestManager.getPendingRequest(requestId, sender.uniqueId) ?: return 0
+        val requester = Bukkit.getPlayer(request.requesterId) ?: return 0
 
         val isTooFar = sender.location.world != requester.location.world ||
             sender.location.distance(requester.location) > BloodRP.config.maxActionDistance
@@ -36,12 +38,8 @@ object AcceptCommand : BloodRPCommand {
             return 0
         }
 
-        if (request.requester != requester) {
-            return 0
-        }
-
-        request.action.play(requester, sender)
-        RequestManager.removeRequestFrom(sender)
+        val consumedRequest = RequestManager.consumePendingRequest(requestId, sender.uniqueId) ?: return 0
+        consumedRequest.action.play(requester, sender)
         return Command.SINGLE_SUCCESS
     }
 }

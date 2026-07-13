@@ -7,9 +7,9 @@ import boo.bloodstone.bloodrp.animations.MarryAnimation
 import boo.bloodstone.bloodrp.commands.BloodRPCommandRegistrar
 import boo.bloodstone.bloodrp.config.BloodRPConfig
 import boo.bloodstone.bloodrp.config.BloodRPConfigLoader
-import boo.bloodstone.bloodrp.database.MarriagesTable
+import boo.bloodstone.bloodrp.database.MarriageRepository
 import boo.bloodstone.bloodrp.listeners.MarriageKissListener
-import boo.bloodstone.bloodrp.listeners.MarriagePdcCleanupListener
+import boo.bloodstone.bloodrp.listeners.MarriagePdcListener
 import boo.bloodstone.bloodrp.tasks.MarriageInteractionExpirationTask
 import boo.bloodstone.commonBloodLib.Scheduler
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
@@ -19,8 +19,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.v1.jdbc.Database
-import org.jetbrains.exposed.v1.jdbc.SchemaUtils
-import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
@@ -73,9 +71,7 @@ class BloodRP : JavaPlugin() {
         val databaseFile = File(dataFolder, "data").absolutePath
         Database.connect("jdbc:h2:file:$databaseFile;DB_CLOSE_DELAY=-1;CACHE_SIZE=8192", driver = "org.h2.Driver")
 
-        transaction {
-            SchemaUtils.create(MarriagesTable)
-        }
+        MarriageRepository.initializeSchema()
     }
 
     private fun registerCommands() {
@@ -86,7 +82,7 @@ class BloodRP : JavaPlugin() {
 
     private fun registerListeners() {
         server.pluginManager.registerEvents(MarriageKissListener, this)
-        server.pluginManager.registerEvents(MarriagePdcCleanupListener, this)
+        server.pluginManager.registerEvents(MarriagePdcListener, this)
     }
 
     private fun startTasks() {

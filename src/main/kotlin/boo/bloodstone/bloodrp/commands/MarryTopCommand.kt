@@ -54,17 +54,13 @@ class MarryTopCommand : BloodRPCommand {
         val namesByUuid = resolveNames(entries.flatMap { listOf(it.husband, it.wife) }.toSet())
         val now = Clock.System.now()
 
-        return buildList {
-            add(miniMessage.deserialize(BloodRP.config.topMarriagesHeader))
-
-            if (entries.isEmpty()) {
-                add(Component.text("Браков пока нет"))
-            } else {
-                addAll(entries.mapIndexed { index, entry -> entryLine(index + 1, entry, namesByUuid, now) })
-            }
-
-            add(miniMessage.deserialize(BloodRP.config.topMarriagesFooter))
+        val body = if (entries.isEmpty()) {
+            listOf(Component.text("Браков пока нет"))
+        } else {
+            entries.mapIndexed { index, entry -> entryLine(index + 1, entry, namesByUuid, now) }
         }
+        return listOf(miniMessage.deserialize(BloodRP.config.topMarriagesHeader)) +
+            body + miniMessage.deserialize(BloodRP.config.topMarriagesFooter)
     }
 
     @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
@@ -129,13 +125,6 @@ class MarryTopCommand : BloodRPCommand {
             messages.forEach(sender::sendMessage)
         }
     }
-
-    @OptIn(ExperimentalTime::class)
-    private data class MarriageTopEntry(
-        val husband: UUID,
-        val wife: UUID,
-        val startedAt: Instant,
-    )
 
     private companion object {
         const val TOP_LIMIT = 10

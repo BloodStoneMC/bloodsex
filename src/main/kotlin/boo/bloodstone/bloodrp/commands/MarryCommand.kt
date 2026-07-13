@@ -3,7 +3,6 @@ package boo.bloodstone.bloodrp.commands
 import boo.bloodstone.bloodrp.ActionMaster
 import boo.bloodstone.bloodrp.PARTNER_ARGUMENT
 import boo.bloodstone.bloodrp.RequestManager
-import boo.bloodstone.bloodrp.animations.MarryAnimation
 import com.mojang.brigadier.Command
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -34,26 +33,9 @@ class MarryCommand : BloodRPCommand {
             return 0
         }
 
-        if (!canMarry(sender, partner)) {
-            return 0
-        }
-
         val action = ActionMaster.fromName(ACTION_NAME) ?: return 0
         RequestManager.setPendingPartner(partner, sender, action)
         return Command.SINGLE_SUCCESS
-    }
-
-    private fun canMarry(sender: Player, partner: Player): Boolean {
-        val marriedPlayers = MarryAnimation.getMarriedPlayers(sender, partner)
-
-        if (marriedPlayers.isEmpty()) {
-            return true
-        }
-
-        val message = marriedPlayers.joinToString("\n") { "${it.name} уже в браке" }
-        sender.sendMessage(message)
-        partner.sendMessage(message)
-        return false
     }
 
     private companion object {

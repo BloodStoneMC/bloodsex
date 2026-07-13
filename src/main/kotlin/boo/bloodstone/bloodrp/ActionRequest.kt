@@ -1,8 +1,12 @@
 package boo.bloodstone.bloodrp
 
-import org.bukkit.entity.Player
+import java.time.Instant
+import java.util.UUID
 
 data class ActionRequest(
-    val requester: Player,
+    val id: UUID,
+    val requesterId: UUID,
+    val recipientId: UUID,
     val action: Action,
+    val expiresAt: Instant,
 )

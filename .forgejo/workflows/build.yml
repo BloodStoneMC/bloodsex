@@ -8,6 +8,6 @@ jobs:
     runs-on: java21
     uses: BloodStone/actions/.forgejo/workflows/build-and-publish.yml@main
     with:
-      gradle_tasks: build -x test
-      maven_goals: -C -DskipTests package
+      gradle_tasks: build
+      maven_goals: -C package
     secrets: inherit

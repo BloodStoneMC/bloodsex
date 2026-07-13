@@ -25,16 +25,14 @@ import kotlin.uuid.toJavaUuid
 
 object MarriageInteractionExpirationTask {
     private const val CHECK_PERIOD_MILLIS = 60_000L
+    private val expirationMessage = Component.text("Ваш брак распался из-за отсутствия взаимодействия")
 
     fun start() {
         BloodRP.coroutineScope.launch {
             while (isActive) {
-                try {
-                    checkMarriages()
-                } catch (exception: Exception) {
+                runCatching(::checkMarriages).onFailure { exception ->
                     BloodRP.plugin.logger.log(Level.WARNING, "Failed to check marriage inactivity.", exception)
                 }
-
                 delay(CHECK_PERIOD_MILLIS)
             }
         }
@@ -42,92 +40,42 @@ object MarriageInteractionExpirationTask {
 
     @OptIn(ExperimentalTime::class)
     private fun checkMarriages() {
-        val maxDaysWithoutInteraction = BloodRP.config.maxDaysWithoutInteraction
-        if (maxDaysWithoutInteraction <= 0) {
-            return
-        }
+        val maxDays = BloodRP.config.maxDaysWithoutInteraction
+        if (maxDays <= 0) return
 
-        val expirationThreshold = Clock.System.now() - maxDaysWithoutInteraction.days
-        val marriages = expireMarriages(expirationThreshold)
-        if (marriages.isEmpty()) {
-            return
-        }
+        val marriages = expireMarriages(Clock.System.now() - maxDays.days)
+        if (marriages.isEmpty()) return
 
-        notifyOnlineSpouses(
-            marriages,
-            Component.text("Ваш брак распался из-за отсутствия взаимодействия")
-        )
+        BloodRP.scheduler.runGlobal {
+            marriages.forEach { (husbandId, wifeId) ->
+                notifyOnlineSpouse(Bukkit.getPlayer(husbandId), wifeId)
+                notifyOnlineSpouse(Bukkit.getPlayer(wifeId), husbandId)
+            }
+        }
     }
 
     @OptIn(ExperimentalTime::class, ExperimentalUuidApi::class)
-    private fun expireMarriages(expirationThreshold: Instant): List<MarriageInteractionEntry> =
-        transaction {
-            val marriages = MarriagesTable
-                .select(MarriagesTable.husband, MarriagesTable.wife)
-                .where(MarriagesTable.lastInteractionAt lessEq expirationThreshold)
-                .map { row ->
-                    MarriageInteractionEntry(
-                        husband = row[MarriagesTable.husband].toJavaUuid(),
-                        wife = row[MarriagesTable.wife].toJavaUuid(),
-                    )
-                }
+    private fun expireMarriages(expirationThreshold: Instant): List<Pair<UUID, UUID>> = transaction {
+        val marriages = MarriagesTable
+            .select(MarriagesTable.husband, MarriagesTable.wife)
+            .where(MarriagesTable.lastInteractionAt lessEq expirationThreshold)
+            .map { row -> row[MarriagesTable.husband].toJavaUuid() to row[MarriagesTable.wife].toJavaUuid() }
 
-            if (marriages.isNotEmpty()) {
-                MarriagesTable.deleteWhere {
-                    MarriagesTable.lastInteractionAt lessEq expirationThreshold
-                }
-            }
-
-            marriages
+        if (marriages.isNotEmpty()) {
+            MarriagesTable.deleteWhere { MarriagesTable.lastInteractionAt lessEq expirationThreshold }
         }
+        marriages
+    }
 
-    private fun notifyOnlineSpouses(
-        marriages: List<MarriageInteractionEntry>,
-        message: Component,
-    ) {
-        BloodRP.scheduler.runGlobal {
-            val notifications = linkedMapOf<UUID, MarriagePlayerNotification>()
-            marriages.forEach { marriage ->
-                Bukkit.getPlayer(marriage.husband)?.let { player ->
-                    notifications.putIfAbsent(
-                        player.uniqueId,
-                        MarriagePlayerNotification(player, marriage.wife)
-                    )
-                }
-                Bukkit.getPlayer(marriage.wife)?.let { player ->
-                    notifications.putIfAbsent(
-                        player.uniqueId,
-                        MarriagePlayerNotification(player, marriage.husband)
-                    )
-                }
-            }
-
-            notifications.values.forEach { notification ->
-                notifyOnlineSpouse(notification, message)
-            }
+    private fun notifyOnlineSpouse(player: Player?, expectedPartnerId: UUID) {
+        player ?: return
+        BloodRP.scheduler.runAtEntity(player, null) {
+            player.clearMarriagePartnerIfMatches(expectedPartnerId)
+            player.sendMessage(expirationMessage)
         }
     }
 
-    private fun notifyOnlineSpouse(notification: MarriagePlayerNotification, message: Component) {
-        BloodRP.scheduler.runAtEntity(notification.player, null) {
-            notification.player.clearMarriagePartnerIfMatches(notification.expectedPartnerUuid)
-            notification.player.sendMessage(message)
-        }
+    private fun Player.clearMarriagePartnerIfMatches(expectedPartnerId: UUID) {
+        if (marriagePartnerUuid() == expectedPartnerId) clearMarriagePartner()
     }
-
-    private fun Player.clearMarriagePartnerIfMatches(expectedPartnerUuid: UUID) {
-        if (marriagePartnerUuid() == expectedPartnerUuid) {
-            clearMarriagePartner()
-        }
-    }
-
-    private data class MarriageInteractionEntry(
-        val husband: UUID,
-        val wife: UUID,
-    )
-
-    private data class MarriagePlayerNotification(
-        val player: Player,
-        val expectedPartnerUuid: UUID,
-    )
 }

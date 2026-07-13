@@ -14,14 +14,14 @@ import kotlin.jvm.optionals.getOrNull
 
 class DoggyAnimation : AnimationAction("предложил вам догги-стайл") {
     override fun play(firstPlayer: Player, secondPlayer: Player) {
-        val session = start(firstPlayer, secondPlayer)
+        val trackers = start(firstPlayer, secondPlayer)
 
         BloodRP.scheduler.runInRegionLater(firstPlayer.location, 30 * 20) {
-            stop(firstPlayer, secondPlayer, session)
+            stop(firstPlayer, secondPlayer, trackers)
         }
     }
 
-    private fun start(firstPlayer: Player, secondPlayer: Player): DoggySession {
+    private fun start(firstPlayer: Player, secondPlayer: Player): List<Tracker> {
         val direction: Vector = secondPlayer.location.subtract(firstPlayer.location).toVector().normalize()
         val newPosition: Vector = firstPlayer.location.add(direction.multiply(0.85)).toVector()
         secondPlayer.teleportAsync(newPosition.toLocation(secondPlayer.world))
@@ -33,7 +33,7 @@ class DoggyAnimation : AnimationAction("предложил вам догги-с�
         secondPlayer.teleportAsync(secondPlayer.location.setDirection(direction))
 
         val initialLocation: Location = firstPlayer.location.clone()
-        for (x in 0..14) {
+        repeat(15) {
             val maxOffset = 0.3
             val offsetX = (Math.random() - 0.3) * 2 * maxOffset
             val offsetY = (Math.random() - 0.3) * 2 * maxOffset
@@ -43,21 +43,14 @@ class DoggyAnimation : AnimationAction("предложил вам догги-с�
             particleLocation.world.spawnParticle(Particle.HEART, particleLocation, 1, 0.0, 0.0, 0.0, 0.0)
         }
 
-        var activeTracker: Tracker? = null
-        var passiveTracker: Tracker? = null
-
-        if (firstPlayer.isOnline) {
-            activeTracker = playBetterModel(firstPlayer, "bloodrp_doggy_active")
-        }
-        if (secondPlayer.isOnline) {
-            passiveTracker = playBetterModel(secondPlayer, "bloodrp_doggy_passive")
-        }
-
-        return DoggySession(activeTracker, passiveTracker)
+        return listOfNotNull(
+            firstPlayer.takeIf { it.isOnline }?.let { playBetterModel(it, "bloodrp_doggy_active") },
+            secondPlayer.takeIf { it.isOnline }?.let { playBetterModel(it, "bloodrp_doggy_passive") },
+        )
     }
 
-    private fun stop(firstPlayer: Player, secondPlayer: Player, session: DoggySession) {
-        session.close()
+    private fun stop(firstPlayer: Player, secondPlayer: Player, trackers: List<Tracker>) {
+        trackers.forEach(Tracker::close)
 
         val initialLocation: Location = firstPlayer.location.clone()
         val particleDirection: Vector = secondPlayer.location.subtract(initialLocation).toVector().normalize()
@@ -67,13 +60,8 @@ class DoggyAnimation : AnimationAction("предложил вам догги-с�
             firstPlayer.world.spawnParticle(Particle.CLOUD, spawnLocation, 1)
         }
 
-        if (firstPlayer.isOnline) {
-            if (firstPlayer.isSneaking) firstPlayer.isSneaking = false
-        }
-
-        if (secondPlayer.isOnline) {
-            if (secondPlayer.isSneaking) secondPlayer.isSneaking = false
-        }
+        if (firstPlayer.isOnline && firstPlayer.isSneaking) firstPlayer.isSneaking = false
+        if (secondPlayer.isOnline && secondPlayer.isSneaking) secondPlayer.isSneaking = false
     }
 
     private fun playBetterModel(player: Player, modelName: String): Tracker? {
@@ -97,15 +85,5 @@ class DoggyAnimation : AnimationAction("предложил вам догги-с�
         }
 
         return tracker
-    }
-}
-
-private data class DoggySession(
-    private val activeTracker: Tracker?,
-    private val passiveTracker: Tracker?,
-) {
-    fun close() {
-        activeTracker?.close()
-        passiveTracker?.close()
     }
 }

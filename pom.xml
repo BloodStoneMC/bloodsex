@@ -16,6 +16,7 @@
         <kotlin.version>2.2.0</kotlin.version>
         <exposed.version>1.2.0</exposed.version>
         <h2.version>2.2.224</h2.version>
+        <junit.version>6.1.1</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -34,6 +35,7 @@
     <build>
         <defaultGoal>clean package</defaultGoal>
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
@@ -47,6 +49,13 @@
                             <goal>compile</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
                 </executions>
                 <configuration>
                     <jvmTarget>${java.version}</jvmTarget>
@@ -56,6 +65,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>3.5.3</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -64,6 +76,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.6</version>
             </plugin>
         </plugins>
         <resources>
@@ -95,12 +112,14 @@
 
     <dependencies>
         <dependency>
+            <!-- Paper publishes API artifacts for supported server versions as snapshots. -->
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.21.11-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <!-- CommonBloodLib currently has no published release coordinate. -->
             <groupId>boo.bloodstone</groupId>
             <artifactId>CommonBloodLib</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -109,7 +128,7 @@
         <dependency>
             <groupId>com.github.Gecolay.GSit</groupId>
             <artifactId>core</artifactId>
-            <version>LATEST</version>
+            <version>3.5.1</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -139,13 +158,13 @@
         <dependency>
             <groupId>boo.bloodstone</groupId>
             <artifactId>BloodOfflinePlayersAPIClient</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>boo.bloodstone</groupId>
             <artifactId>BloodOfflinePlayersAPICommon</artifactId>
-            <version>1.6.2-SNAPSHOT</version>
+            <version>1.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -167,6 +186,12 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
