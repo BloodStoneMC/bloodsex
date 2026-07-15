@@ -8,4 +8,5 @@ data class BloodRPConfig(
     val maxDaysWithoutInteraction: Long,
     val warningDaysWithoutInteraction: Long,
     val sneakKissCooldownSeconds: Long,
+    val policeGroup: String,
 )

@@ -1,9 +1,10 @@
 package boo.bloodstone.bloodrp.commands
 
 import io.papermc.paper.command.brigadier.Commands
+import net.luckperms.api.LuckPerms
 
 object BloodRPCommandRegistrar {
-    fun register(commands: Commands) {
+    fun register(commands: Commands, luckPerms: LuckPerms) {
         commands.register(RequestActionCommand("bj").node().build(), "Предложить bj")
         commands.register(RequestActionCommand("kiss").node().build(), "Предложить поцелуй")
         commands.register(
@@ -17,6 +18,20 @@ object BloodRPCommandRegistrar {
         commands.register(
             Commands.literal("bloodrp")
                 .then(AcceptCommand.node())
+                .then(
+                    PoliceGroupCommand(
+                        luckPerms = luckPerms,
+                        commandName = "police",
+                        grant = true,
+                    ).node()
+                )
+                .then(
+                    PoliceGroupCommand(
+                        luckPerms = luckPerms,
+                        commandName = "unpolice",
+                        grant = false,
+                    ).node()
+                )
                 .then(ReloadCommand.node())
                 .build(),
             "BloodRP commands"

@@ -17,5 +17,8 @@ permissions:
   bloodrp.reload:
     description: Allows reloading BloodRP config at runtime
     default: op
+  bloodrp.police:
+    description: Allows managing the configured police LuckPerms group
+    default: op
 
-depend: [CommonBloodLib, GSit, BetterModel]
+depend: [CommonBloodLib, GSit, BetterModel, LuckPerms]

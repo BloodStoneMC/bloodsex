@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import net.luckperms.api.LuckPerms
 import org.bukkit.plugin.java.JavaPlugin
 import org.jetbrains.exposed.v1.jdbc.Database
 import java.io.File
@@ -24,6 +25,8 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
 class BloodRP : JavaPlugin() {
+    private lateinit var luckPerms: LuckPerms
+
     override fun onEnable() {
         plugin = this
 
@@ -31,6 +34,9 @@ class BloodRP : JavaPlugin() {
         applyRuntimeConfig(loadConfig())
         scheduler = Scheduler(this)
         coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        luckPerms = requireNotNull(server.servicesManager.load(LuckPerms::class.java)) {
+            "LuckPerms API service is unavailable"
+        }
         setupDatabase()
         registerActions()
         registerCommands()
@@ -76,7 +82,7 @@ class BloodRP : JavaPlugin() {
 
     private fun registerCommands() {
         lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) { event ->
-            BloodRPCommandRegistrar.register(event.registrar())
+            BloodRPCommandRegistrar.register(event.registrar(), luckPerms)
         }
     }
 

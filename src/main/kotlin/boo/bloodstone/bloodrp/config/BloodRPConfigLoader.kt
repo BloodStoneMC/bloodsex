@@ -18,5 +18,6 @@ object BloodRPConfigLoader {
             maxDaysWithoutInteraction = config.getLong("maxDaysWithoutInteraction", 14L),
             warningDaysWithoutInteraction = config.getLong("warningDaysWithoutInteraction", 13L),
             sneakKissCooldownSeconds = config.getLong("sneakKissCooldownSeconds", 5L),
+            policeGroup = config.getString("police.group", "police")!!.trim(),
         )
 }

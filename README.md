@@ -22,6 +22,7 @@ BloodRP добавляет RP-действия между игроками, си
 - `CommonBloodLib`
 - `GSit`
 - `BetterModel`
+- `LuckPerms`
 
 Для `/marry top` также нужен `BloodOfflinePlayersAPIClient` и `BloodOfflinePlayersAPICommon` на runtime classpath.
 Команда резолвит ники через Offline Players API асинхронно и не блокирует main thread.
@@ -39,6 +40,8 @@ BloodRP добавляет RP-действия между игроками, си
 | `/unmarry`                     | `bloodrp.sex`    | Разводит игрока с текущим супругом.      |
 | `/divorce`                     | `bloodrp.sex`    | Алиас для `/unmarry`.                    |
 | `/bloodrp accept <request-id>` | `bloodrp.sex`    | Принимает конкретный запрос по ID.       |
+| `/bloodrp police <player>`     | `bloodrp.police` | Выдает игроку настроенную LP-группу.      |
+| `/bloodrp unpolice <player>`   | `bloodrp.police` | Забирает у игрока настроенную LP-группу.  |
 | `/bloodrp reload`              | `bloodrp.reload` | Перезагружает `config.yml` без рестарта. |
 | `/rape bj <player>`            | `bloodrp.rape`   | Запускает `bj` без подтверждения.        |
 | `/rape doggy <player>`         | `bloodrp.rape`   | Запускает `doggy` без подтверждения.     |
@@ -50,6 +53,7 @@ BloodRP добавляет RP-действия между игроками, си
 | `bloodrp.sex`         | `op`    | Доступ к обычным действиям, браку и принятию запросов. |
 | `bloodrp.rape`        | `op`    | Доступ к direct-действиям без подтверждения.           |
 | `bloodrp.rape.immune` | `false` | Игрока с этим правом нельзя выбрать для `/rape`.       |
+| `bloodrp.police`      | `op`    | Управление специальной группой через LuckPerms API.    |
 | `bloodrp.reload`      | `op`    | Доступ к `/bloodrp reload`.                            |
 
 Пример для LuckPerms:
@@ -58,6 +62,7 @@ BloodRP добавляет RP-действия между игроками, си
 /lp group default permission set bloodrp.sex true
 /lp group admin permission set bloodrp.reload true
 /lp group admin permission set bloodrp.rape true
+/lp group admin permission set bloodrp.police true
 ```
 
 ## Как пользоваться
@@ -104,6 +109,9 @@ maxDaysWithoutInteraction: 14
 warningDaysWithoutInteraction: 13
 sneakKissCooldownSeconds: 5
 
+police:
+  group: "police"
+
 topMarriages:
   header: "<gold><bold>Топ браков</bold></gold>"
   footer: "<gray>Новые браки попадают сюда автоматически.</gray>"
@@ -118,6 +126,7 @@ topMarriages:
 | `maxDaysWithoutInteraction`     | Через сколько дней без поцелуя брак распадется.           |
 | `warningDaysWithoutInteraction` | Через сколько дней без поцелуя предупреждать при входе.   |
 | `sneakKissCooldownSeconds`      | Кулдаун автопоцелуя супругов при sneaking, в секундах.    |
+| `police.group`                  | Существующая группа LuckPerms для `police`/`unpolice`.    |
 | `topMarriages.header`           | MiniMessage-строка перед списком браков.                  |
 | `topMarriages.footer`           | MiniMessage-строка после списка браков.                   |
 

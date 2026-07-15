@@ -4,6 +4,9 @@ maxDaysWithoutInteraction: 14
 warningDaysWithoutInteraction: 13
 sneakKissCooldownSeconds: 5
 
+police:
+  group: "police"
+
 topMarriages:
   header: "<gold><bold>Топ браков</bold></gold>"
   footer: "<gray>Новые браки попадают сюда автоматически.</gray>"
